@@ -1,12 +1,16 @@
 const express=require('express');
 const conectarBD=require('./config/db');
 const router=require('./config/routes/api/usuarios');
+const cors=require('cors');
 
 //Creamos el servidor
 const app=express();
 
 //Conectamos a la BD
 conectarBD();
+
+//Middeware
+app.use(cors());
 
 //Middleware
 app.use(express.json());

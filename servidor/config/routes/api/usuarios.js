@@ -9,10 +9,14 @@ router.post('/registrar',async (req,res)=>{
     try{
        const pass= bcrypt.hashSync(req.body.password,12); 
        req.body.password=pass;
-
-       //Creamos el usuario
-       const usuario=await Usuario.create(req.body);
-       res.json(usuario);
+       const usuario=await Usuario.findOne({email:req.body.email}); 
+       if(usuario==null){
+          //Creamos el usuario
+          const usuario=await Usuario.create(req.body);
+          res.json(usuario);
+       }
+       else
+          res.json({error:'Ya existe el correo'+` ${usuario.email}`+' en la base de datos'});
     } 
     catch(error){
          res.json({error:error.message});
@@ -23,7 +27,6 @@ router.post('/registrar',async (req,res)=>{
 router.post('/login',async (req,res)=>{
     //Comprobar si existe el email
     const usuario=await Usuario.findOne({email:req.body.email});
-     
    if(!usuario){
     return res.json({error:'Usuario no registrado'});
    } 
@@ -35,7 +38,7 @@ router.post('/login',async (req,res)=>{
 
    res.json({
       succcess:'login correcto',
-      token:createToken(usuario)
+      token:createToken(usuario),
     });
 });
 
